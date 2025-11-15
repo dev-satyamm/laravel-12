@@ -1,0 +1,66 @@
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: mysql_compose
+    command: --default-authentication-plugin=mysql_native_password --bind-address=0.0.0.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_USER: satyam
+      MYSQL_PASSWORD: 1234
+      MYSQL_DATABASE: travellist
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - laravel-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-usatyam", "-p1234"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: satyam
+      PMA_PASSWORD: 1234
+    depends_on:
+      - mysql
+    networks:
+      - laravel-network
+
+  apache:
+    image: httpd
+    ports:
+      - "80:80"
+
+  laravel:
+    build:
+      context: .
+    container_name: laravel
+    restart: always
+    depends_on:
+      - mysql
+    volumes:
+      - ./etc/default.conf:/etc/apache2/sites-enabled/000-default.conf 
+      # - ./etc/my-custom.env:/var/www/html/travellist/.env  
+    environment:
+      environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: travellist
+    ports:
+      - "5000:80"
+    networks:
+      - laravel-network
+
+
+networks:
+  laravel-network :
+    driver: bridge

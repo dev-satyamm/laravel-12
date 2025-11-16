@@ -5,13 +5,19 @@ RUN apt-get update && apt-get install -y \
     curl \
     zip \
     unzip \
-    ssh
+    ssh \
+    vim \
+    nano \
+    libsqlite3-dev \
+    sqlite3
+
+    
 
 # WORK DIR
 
 WORKDIR /var/www/html/
 
-RUN docker-php-ext-install mysqli pdo_mysql && docker-php-ext-enable mysqli
+RUN docker-php-ext-install mysqli pdo_mysql && docker-php-ext-enable mysqli 
 
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer 

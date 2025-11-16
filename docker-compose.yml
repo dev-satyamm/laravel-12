@@ -36,11 +36,6 @@ services:
     networks:
       - laravel-network
 
-  apache:
-    image: httpd
-    ports:
-      - "80:80"
-
   laravel:
     build:
       context: .
@@ -49,8 +44,7 @@ services:
     depends_on:
       - mysql
     volumes:
-      - ./etc/default.conf:/etc/apache2/sites-enabled/000-default.conf 
-      # - ./etc/my-custom.env:/var/www/html/travellist/.env  
+      - ./etc/default.conf:/etc/apache2/sites-enabled/000-default.conf  
     environment:
       environment:
       MYSQL_ROOT_PASSWORD: 1234

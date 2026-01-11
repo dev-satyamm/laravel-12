@@ -39,7 +39,10 @@ services:
   laravel:
     build:
       context: .
+      args:
+        APP_BUILD_NUMBER: ${BUILD_NUMBER}
     container_name: laravel
+    image: laravel:${APP_BUILD_NUMBER}
     restart: always
     depends_on:
       - mysql

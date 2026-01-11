@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+    stages {
+        stage('Check running containers on EC2') {
+            steps {
+                sshagent(['docker_server']) {
+                    sh """
+                      ssh -o StrictHostKeyChecking=no ubuntu@13.233.152.153 << 'EOF'
+                        if [ -n "\$(docker ps -q)" ]; then
+                            echo "Some Docker containers are running:"
+                            docker stop \$(docker ps -q)
+                            docker ps
+                        else
+                            echo "No Docker containers are running."
+                            IMAGE_TAG=${env.BUILD_NUMBER}
+                            cd ~/laravel-12
+                            pwd
+                            docker build -t laravel:${IMAGE_TAG} .
+                            docker compose up -d --build
+                        fi
+                    EOF
+                    """
+                }
+            }
+        }
+    }
+}
